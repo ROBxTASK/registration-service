@@ -1,0 +1,253 @@
+openapi: 3.0.1
+info:
+  title: ROBxTASK Registration Service
+  description: This is the interface definition of a registration service for ROBxTASK
+    (registration-service).
+  termsOfService: https://robxtask.salzburgresearch.at/legal-notice/
+  contact:
+    email: fstroh@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.1.0
+externalDocs:
+  description: Find out more about ROBxTASK
+  url: http://robxtask.salzburgresearch.at
+servers:
+  - url: /v1
+tags:
+  - name: device-controller
+    description: Retrieve, create and manipulate single devices
+    externalDocs:
+      description: Source Code
+      url: https://github.com/ROBxTASK/registration-service
+  - name: devices-controller
+    description: Retrieve multiple devices
+    externalDocs:
+      description: Source Code
+      url: https://github.com/ROBxTASK/registration-service
+  - name: version-controller
+    description: Retrieve service identifier and version number
+    externalDocs:
+      description: Source Code
+      url: https://github.com/ROBxTASK/registration-service
+paths:
+  /version:
+    get:
+      operationId: getVersion
+      tags:
+        - version
+        - version-controller
+      description: |
+        get the service id and version string
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+  /device/{id}:
+    get:
+      operationId: getDeviceById
+      tags:
+        - device
+        - device-controller
+      description: |
+        get a specific device object by its id
+      parameters:
+        - name: id
+          in: path
+          description: An ID-String of the Device (e.g. MAC Address)
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+  /device:
+    put:
+      operationId: updateDevice
+      tags:
+        - device
+        - device-controller
+      description: update a specific device object by its id
+      requestBody:
+        description: Device object that shall be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        200:
+          description: Success
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Device not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+      x-codegen-request-body-name: body
+    post:
+      operationId: addDevice
+      tags:
+        - device
+        - device-controller
+      description: post a device new object
+      requestBody:
+        description: Device object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: false
+      responses:
+        201:
+          description: device added
+          content: {}
+        400:
+          description: device post not successful, bad request.
+          content: {}
+        409:
+          description: device not accepted, ID already existing
+          content: {}
+      x-codegen-request-body-name: body
+  /devices:
+    get:
+      operationId: getDevices
+      tags:
+        - device
+        - devices-controller
+      description: |
+        get list of devices
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+  /secret:
+    get:
+      summary: Return secret string
+      responses:
+        200:
+          description: secret response
+          content:
+            '*/*':
+              schema:
+                type: string
+      security:
+        - oauth2:
+            - uid
+components:
+  schemas:
+    Version:
+      title: Version
+      type: object
+      properties:
+        serviceId:
+          type: string
+        version:
+          type: string
+      example:
+        serviceId: serviceId
+        version: version
+    Skill:
+      title: Skill
+      type: object
+      properties:
+        SkillName:
+          type: string
+        SkillVersion:
+          type: string
+        SkillDescription:
+          type: string
+        SkillSlots:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillSlot'
+      example:
+        SkillName: SkillName
+        SkillDescription: SkillDescription
+        SkillVersion: SkillVersion
+        SkillSlots:
+          SkillSlotName: SkillSlotName
+          SkillSlotType: String
+    SkillSlot:
+      title: SkillSlot
+      type: object
+      properties:
+        SkillSlotName:
+          type: string
+        SkillSlotType:
+          type: string
+          enum: # as of D3.1a
+            - String # (for text and complex information)
+            - Numeric # (also complex numerics, e.g., position data)
+            - Object # (tangible objects - e.g., glass of water, apple, etc.)
+            - Enum # (e.g., list of predefined position from which the user can choose)
+            - Bool # (to inform caller about a potential result error)
+            - Actor # "Robot", "Device", "Person"
+            - Position # exact position (e.g. coordinates)
+            - Location # human-readable location (e.g., a specific room in the apartment)
+            - Output # reference to an output, such as Shell/GUI/Logs, etc.
+            - UserInput # (e.g., button press, touch input, voice input)
+            - Datetime # one specific date / time
+            - Time # (for recurring events, e.g., every day at 00:00)
+            - Condition # (mathematical or logical expression)
+      description: parameters required for the skill (aka 'slots') defined by it's name and type.
+      example:
+        SkillSlotName: SkillSlotName
+        SkillSlotType: String
+    Device:
+      title: Device
+      type: object
+      properties:
+        DeviceID:
+          type: string
+          xml:
+            name: DeviceID
+        DeviceName:
+          type: string
+        DeviceDescription:
+          type: string
+        Skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+      example:
+        DeviceDescription: Social robot for more natural user interactions
+        Skills:
+          - SkillName: GetData
+            SkillDescription: >
+              This skill can be used to read from the currently set QBO internal settings.
+              At the moment only reading 'robotName' and 'userName' is supported.
+            SkillVersion: V01
+          - SkillName: MoveToLocation
+            SkillDescription: >
+              QBO will move its head according to the specified SLOT direction.
+              The following directions are possible: up, down, right, left, start.
+              Passing the start-direction will make QBO go back to its original starting position.
+            SkillVersion: V01
+        DeviceID: 2C:54:91:88:C9:E3
+        DeviceName: TheCorpora Q.BO One
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://tbd.example.com/oauth2/dialog
+          scopes:
+            uid: Unique identifier of the user accessing the service.
