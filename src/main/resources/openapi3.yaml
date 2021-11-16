@@ -351,7 +351,7 @@ components:
                 SlotValues: [ "up", "down", "left", "right", "start" ]
         ConfigParams:
           - Key: "ROS Master URI"
-            Value: "192.168.4.10:11311"
+            Value: "http://192.168.4.10:11311"
           - Key: "Internal Network Device-IP"
             Value: "192.168.4.12"
           - Key : "Internal Network Hostname"
