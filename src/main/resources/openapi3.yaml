@@ -38,7 +38,7 @@ paths:
       tags:
         - version
         - version-controller
-      description: |
+      description:
         get the service id and version string
       responses:
         200:
@@ -53,7 +53,7 @@ paths:
       tags:
         - device
         - device-controller
-      description: |
+      description:
         get a specific device object by its id
       parameters:
         - name: id
@@ -127,7 +127,7 @@ paths:
       tags:
         - device
         - devices-controller
-      description: |
+      description:
         get list of devices
       responses:
         200:
@@ -162,63 +162,174 @@ components:
         version:
           type: string
       example:
-        serviceId: serviceId
-        version: version
+        serviceId: registration-service
+        version: V1.0.0
     Skill:
-      title: Skill
       type: object
+      required:
+        - SkillName
       properties:
         SkillName:
           type: string
+          description:
+            Unique name of the skill, as defined below (MoveToLocation, SendMessage, etc.)
+          enum:
+            - CommissionParts
+            - DeliverObject
+            - DetectObject
+            - FetchObject
+            - GetData
+            - GrabObject
+            - GraphicalUserInteraction
+            - Loop
+            - MeasureHydration
+            - MoveToLocation
+            - MoveToPosition
+            - OnMessageReceive
+            - PutObject
+            - Selection
+            - SendMessage
+            - SetData
+            - TeachingObjectRecognition
+            - TeachingWorkspacePosition
+            - VoiceOutput
+            - WaitForCondition
+            - WaitForExternalEvent
+            - WaitForUserInput
         SkillVersion:
           type: string
+          enum: # possible values for the version field, i.e. the list of current and previous supported versions
+            - V0.1
         SkillDescription:
           type: string
         SkillSlots:
           type: array
           items:
-            $ref: '#/components/schemas/SkillSlot'
-      example:
-        SkillName: SkillName
-        SkillDescription: SkillDescription
-        SkillVersion: SkillVersion
-        SkillSlots:
-          SkillSlotName: SkillSlotName
-          SkillSlotType: String
-    SkillSlot:
-      title: SkillSlot
+            $ref: '#/components/schemas/Slot'
+        ReturnResult:
+          $ref: '#/components/schemas/ReturnResult'
+        Status:
+          $ref: '#/components/schemas/Status'
+
+    Slot:
       type: object
+      description:
+        Defines a parameter slot for the robotic skill, if any.
+      required:
+        - SlotName
+        - SlotValues
       properties:
-        SkillSlotName:
+        SlotName:
           type: string
-        SkillSlotType:
-          type: string
-          enum: # as of D3.1a
-            - String # (for text and complex information)
+          description:
+            Unique name of the parameter, as defined by the ROBxTASK Version
+            (e.g. Position, Location, OutputMessage, ...)
+            There is a 1:n - Relation to the slot type, i.e. based on the SlotName, the SlotType is derived.
+            TODO -> Harmonisation with Wiki-Page!
+          enum: # MAY NEED FURTHER HARMONISATION !
+            - Actor # e.g. "Robot", "Device", "Person"
+            - AlarmThreshold
+            - Bool # (to inform caller about a potential result error)
+            - Condition # (mathematical or logical expression)
+            - Datetime # one specific date / time
+            - Endpoint # w.r.t. GetData & SetData, e.g. REST-Endpoint for GET/POST/PUT Methods
+            - Enum # (e.g., list of predefined position from which the user can choose)
+            - InputContent
+            - InputData
+            - InputMode
+            - Location # human-readable location (e.g., a specific room in the apartment)
+            - MeasurementInterval
+            - MessageContent # String "SendMessage"
+            - MessageType # enum "SendMessage", "OnReceiveMessage"
             - Numeric # (also complex numerics, e.g., position data)
             - Object # (tangible objects - e.g., glass of water, apple, etc.)
-            - Enum # (e.g., list of predefined position from which the user can choose)
-            - Bool # (to inform caller about a potential result error)
-            - Actor # "Robot", "Device", "Person"
-            - Position # exact position (e.g. coordinates)
-            - Location # human-readable location (e.g., a specific room in the apartment)
+            - ObjectData
+            - ObjectDestinationLocation
+            - ObjectPosition
+            - ObjectTargetLocation
+            - ObjectType
             - Output # reference to an output, such as Shell/GUI/Logs, etc.
-            - UserInput # (e.g., button press, touch input, voice input)
-            - Datetime # one specific date / time
+            - OutputData
+            - OutputMessage # String "VoiceOutput", "GraphicalUserInteraction"
+            - Position # exact position (e.g. coordinates)
+            - RobotPosition
+            - String # (for text and complex information)
             - Time # (for recurring events, e.g., every day at 00:00)
-            - Condition # (mathematical or logical expression)
-      description: parameters required for the skill (aka 'slots') defined by it's name and type.
-      example:
-        SkillSlotName: SkillSlotName
-        SkillSlotType: String
+            - Timestamp
+            - UserInput # (e.g., button press, touch input, voice input)
+            - UserOptions # enum "GraphicalUserInteraction"
+        SlotValues:
+          type: array
+          items:
+            type: string
+          description:
+            Array of allowed values for the defined slot. This list shall be defined by the
+            implementor of the skill because it may differ from robot to robot depending on the use case.
+            For example, if a robot provides predefined positions, such as "parking lot",
+            "target position", "start position", etc., then the robot engineer can provide such values to
+            help the task designer in the understanding of the specific skill.
+            If such values are provided, they will be presented as "enum" for the task designers, when creating
+            processes using that skill, otherwise any value will be accepted.
+            Also more specific SlotNames (such as "RobotPosition") are usually also represented as Strings.
+    ReturnResult:
+      type: object
+      description:
+        ReturnResult specifies the return value that is returned after the execution of the skill.
+        In most cases the return value will be boolean and indicate, whether the skill was executed OK or not (NOK).
+        In the skill definition, the specification of the return result is optional, i.e. it can also be "void".
+      required:
+        - ReturnResultType
+        - ReturnResultName
+      properties:
+        ReturnResultType:
+          type: string
+          enum:
+            - Bool
+            - String
+            - Numeric
+            - Object
+            - Enum
+        ReturnResultName:
+          type: string
+    Status:
+      type: object
+      description:
+        Describes the status during the execution of a robotic skill. Maps to the "Feedback"-Concept when
+        implementing the skill as a ROS Action. In most cases, this will be a numeric value describing the
+        completion percentage. In the skill definition, the specification of "status" is optional.
+      required:
+        - StatusType
+        - StatusName
+      properties:
+        StatusType:
+          type: string
+        StatusName:
+          type: string
+
+    SendMessage:
+      allOf:
+        - $ref: '#/components/schemas/Skill'
+
+
+    OnMessageReceive:
+      type: object
+      properties:
+        Slot1:
+          $ref: '#/components/schemas/MessageType'
+        Result:
+          $ref: '#/components/schemas/MessageContent'
+
+    MessageType:  # enum "SendMessage", "OnReceiveMessage"
+      type: string
+    MessageContent: # String "SendMessage"
+      type: string
+
     Device:
       title: Device
       type: object
       properties:
         DeviceID:
           type: string
-          xml:
-            name: DeviceID
         DeviceName:
           type: string
         DeviceDescription:
@@ -228,21 +339,31 @@ components:
           items:
             $ref: '#/components/schemas/Skill'
       example:
+        DeviceID: "2C:54:91:88:C9:E3"
+        DeviceName: TheCorpora Q.BO One
         DeviceDescription: Social robot for more natural user interactions
         Skills:
           - SkillName: GetData
-            SkillDescription: >
+            SkillVersion: V0.1
+            SkillDescription:
               This skill can be used to read from the currently set QBO internal settings.
               At the moment only reading 'robotName' and 'userName' is supported.
-            SkillVersion: V01
+            SkillSlots:
+              - SlotName: Endpoint
+                SlotValues: ["Internal Settings"]
+              - SlotName: InputData
+                SlotValues: [ "robotName", "userName" ]
+
           - SkillName: MoveToLocation
-            SkillDescription: >
-              QBO will move its head according to the specified SLOT direction.
+            SkillVersion: V0.1
+            SkillDescription:
+              "QBO will move its head according to the specified SLOT direction.
               The following directions are possible: up, down, right, left, start.
-              Passing the start-direction will make QBO go back to its original starting position.
-            SkillVersion: V01
-        DeviceID: 2C:54:91:88:C9:E3
-        DeviceName: TheCorpora Q.BO One
+              Passing the start-direction will make QBO go back to its original starting position."
+            SkillSlots:
+              - SlotName: Location
+                SlotValues: [ "up", "down", "left", "right", "start" ]
+
   securitySchemes:
     oauth2:
       type: oauth2
