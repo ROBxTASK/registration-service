@@ -306,24 +306,6 @@ components:
         StatusName:
           type: string
 
-    SendMessage:
-      allOf:
-        - $ref: '#/components/schemas/Skill'
-
-
-    OnMessageReceive:
-      type: object
-      properties:
-        Slot1:
-          $ref: '#/components/schemas/MessageType'
-        Result:
-          $ref: '#/components/schemas/MessageContent'
-
-    MessageType:  # enum "SendMessage", "OnReceiveMessage"
-      type: string
-    MessageContent: # String "SendMessage"
-      type: string
-
     Device:
       title: Device
       type: object
