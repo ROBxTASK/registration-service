@@ -1,0 +1,10 @@
+# OpenAPI Codegen Ignore
+
+# Use this file to prevent files from being overwritten by the generator.
+# The patterns follow closely to .gitignore or .dockerignore.
+
+**/DeviceApiController.java
+**/DevicesApiController.java
+**/VersionApiController.java
+**/TasksApiController.java
+**/org/openapitools/**

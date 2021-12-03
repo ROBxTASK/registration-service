@@ -1,0 +1,49 @@
+{
+  "DeviceID": "2C:54:91:88:C9:E3",
+  "DeviceName": "TheCorpora Q.BO One",
+  "DeviceDescription": "Social robot for more natural user interactions",
+  "Skills": [
+    {
+      "SkillName": "GetData",
+      "SkillSlots": [
+        {
+          "SlotName": "Endpoint",
+          "SlotValues": [
+            "Internal Settings"
+          ]
+        },
+        {
+          "SlotName": "InputData",
+          "SlotValues": [
+            "robotName",
+            "userName"
+          ]
+        }
+      ],
+      "ReturnResult": {
+        "ReturnResultName": "isOK",
+        "ReturnResultType": "Bool"
+      },
+      "Status": {
+        "StatusName": "percentComplete",
+        "StatusType": "Numeric"
+      },
+      "SkillVersion": "-1",
+      "SkillDescription": "This skill can be used to read from the currently set QBO internal settings. At the moment only reading 'robotName' and 'userName' is supported."
+    }
+  ],
+  "ConfigParams": [
+    {
+      "Key": "ROS Master URI",
+      "Value": "192.168.48.41:11311"
+    },
+    {
+      "Key": "Internal Network Device-IP",
+      "Value": "192.168.48.58"
+    },
+    {
+      "Key": "Internal Network Hostname",
+      "Value": "qbo"
+    }
+  ]
+}

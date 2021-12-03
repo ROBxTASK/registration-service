@@ -1,0 +1,66 @@
+{
+  "DeviceID": "2C:54:91:88:C9:E3",
+  "DeviceName": "TheCorpora Q.BO One",
+  "DeviceDescription": "Social robot for more natural user interactions",
+  "Skills": [
+    {
+      "SkillName": "GetData",
+      "SkillSlots": [
+        {
+          "SlotName": "Endpoint",
+          "SlotValues": [
+            "Internal Settings"
+          ]
+        },
+        {
+          "SlotName": "InputData",
+          "SlotValues": [
+            "robotName",
+            "userName"
+          ]
+        }
+      ],
+      "ReturnResult": {
+        "ReturnResultName": "isOK",
+        "ReturnResultType": "Bool"
+      },
+      "Status": {
+        "StatusName": "percentComplete",
+        "StatusType": "Numeric"
+      },
+      "SkillVersion": "V0.1",
+      "SkillDescription": "This skill can be used to read from the currently set QBO internal settings. At the moment only reading 'robotName' and 'userName' is supported."
+    },
+    {
+      "SkillName": "MoveToLocation",
+      "SkillSlots": [
+        {
+          "SlotName": "Location",
+          "SlotValues": [
+            "up",
+            "down",
+            "left",
+            "right",
+            "start"
+          ]
+        }
+      ],
+      "SkillVersion": "V0.1",
+      "SkillDescription": "QBO will move its head according to the specified SLOT direction. The following directions are possible: up, down, right, left, start. Passing the start-direction will make QBO go back to its original starting position."
+    }
+  ],
+  "ConfigParams": [
+    {
+      "Key": "ROS Master URI",
+      "Value": "192.168.48.41:11311"
+    },
+    {
+      "Key": "Internal Network Device-IP",
+      "Value": "192.168.48.58"
+    },
+    {
+      "Key": "Internal Network Hostname",
+      "Value": "qbo"
+    }
+  ]
+}

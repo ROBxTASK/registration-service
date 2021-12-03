@@ -1,11 +1,5 @@
-package at.srfg.robxtask.persistence;
+package at.srfg.robxtask.registration.persistence;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
-@Component
-@SuppressWarnings("unused")
-@ConfigurationProperties(prefix = "robxtask.registration-service.mongodb")
 public class MongoConfig {
 
     private String url;
@@ -27,5 +21,12 @@ public class MongoConfig {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "MongoConfig{" +
+                "url='" + url + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
 

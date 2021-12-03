@@ -1,29 +1,30 @@
-package at.srfg.robxtask;
+package at.srfg.robxtask.registration;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
 import java.io.Serial;
 
 @Configuration
-@EnableCircuitBreaker
 @EnableAutoConfiguration
 @EnableFeignClients
 @RestController
-@SpringBootApplication
+@EnableWebMvc
 @EnableOpenApi
-@ComponentScan(
-        basePackages = {"at.srfg.robxtask", "at.srfg.robxtask.swagger", "at.srfg.robxtask.swagger.api", "at.srfg.robxtask.swagger.model", "io.swagger.configuration"}
-)
+@SpringBootApplication
+@ComponentScan(basePackages = {"at.srfg.robxtask.registration"})
 public class RegistrationServiceApp implements CommandLineRunner {
     public RegistrationServiceApp() {
     }
@@ -49,5 +50,12 @@ public class RegistrationServiceApp implements CommandLineRunner {
             return 10;
         }
     }
+
+    @Bean
+    public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
+        return new Jackson2ObjectMapperBuilder()
+                .serializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
 
 }

@@ -7,28 +7,33 @@
     <groupId>at.srfg.robxtask</groupId>
     <artifactId>registration-service</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.7</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <java.version>17</java.version>
+        <maven.compiler.source>15</maven.compiler.source>
+        <maven.compiler.target>15</maven.compiler.target>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
-        <spring.cloud.version>2.2.9.RELEASE</spring.cloud.version>
-        <swagger.api.src>${project.basedir}/src/main/resources/openapi3.yaml</swagger.api.src>
-        <swagger.annotations.version>2.1.11</swagger.annotations.version>
-        <swagger.default.package>${project.groupId}</swagger.default.package>
-        <jackson.version>2.12.5</jackson.version>
+        <openapi.api.src>${project.basedir}/src/main/resources/openapi3.yaml</openapi.api.src>
+        <openapi.ignore>${project.basedir}/src/main/resources/.openapi-codegen-ignore</openapi.ignore>
+        <openapi.default.package>${project.groupId}.registration.openapi</openapi.default.package>
+        <jackson.version>2.13.0</jackson.version>
         <hystrix.version>1.5.18</hystrix.version>
+        <springfox.version>3.0.0</springfox.version>
     </properties>
 
     <developers>
         <developer>
             <id>iot365</id>
             <name>fstroh</name>
+            <email>fstroh@gmail.com</email>
         </developer>
     </developers>
 
@@ -38,7 +43,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Hoxton.SR8</version>
+                <version>2020.0.4</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -50,70 +55,77 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-commons</artifactId>
-            <version>${spring.cloud.version}</version>
+        </dependency>
+        <dependency>
+            <!-- required for backwards compatibility with bootstrap.yml -->
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-openfeign-core</artifactId>
-            <version>${spring.cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-context</artifactId>
-            <version>${spring.cloud.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-            <version>${spring.cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <version>${spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.3.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>${swagger.annotations.version}</version>
-        </dependency>
+        <!--SpringFox dependencies -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.joschi.jackson</groupId>
-            <artifactId>jackson-datatype-threetenbp</artifactId>
-            <version>2.6.4</version>
+            <version>${springfox.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -121,24 +133,36 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.1</version>
         </dependency>
+        <!-- Bean Validation API support -->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
             <version>2.0.2</version>
         </dependency>
         <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <version>6.6</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+       <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -148,9 +172,8 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
                 <configuration>
-                    <mainClass>at.srfg.robxtask.RegistrationServiceApp</mainClass>
+                    <mainClass>at.srfg.robxtask.registration.RegistrationServiceApp</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -161,34 +184,27 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>io.swagger.codegen.v3</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>3.0.29</version>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>5.3.0</version>
                 <executions>
                     <execution>
+                        <id>spring-server</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${swagger.api.src}</inputSpec>
-                            <language>spring</language>
-                            <modelPackage>${swagger.default.package}.swagger.model</modelPackage>
-                            <apiPackage>${swagger.default.package}.swagger.api</apiPackage>
-                            <invokerPackage>${swagger.default.package}.swagger.invoker</invokerPackage>
+                            <generatorName>spring</generatorName>
+                            <inputSpec>${openapi.api.src}</inputSpec>
+                            <strictSpec>true</strictSpec>
+                            <modelPackage>${openapi.default.package}.model</modelPackage>
+                            <apiPackage>${openapi.default.package}.api</apiPackage>
+                            <ignoreFileOverride>${openapi.ignore}</ignoreFileOverride>
                             <configOptions>
-                                <sourceFolder>src/gen/java/main</sourceFolder>
-                                <interfaceOnly>true</interfaceOnly>
+                                <basePackage>${openapi.default.package}</basePackage>
+                                <sourceFolder>src/gen/main/java</sourceFolder>
                             </configOptions>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>doc</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${swagger.api.src}</inputSpec>
-                            <language>html</language>
+                            <!--  <configHelp>true</configHelp>-->
                         </configuration>
                     </execution>
                 </executions>
@@ -214,6 +230,27 @@
                     <info>Version: ${project.version}</info>
                     <font>standard</font>
                     <color>default</color>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <environmentVariables>
+                        <SPRING_CONFIG_NAME>application-test</SPRING_CONFIG_NAME>
+                        <REGISTRATION_SERVICE_MONGODB_URL>mongodb://root:password@localhost:27017
+                        </REGISTRATION_SERVICE_MONGODB_URL>
+                        <REGISTRATION_SERVICE_MONGODB_NAME>devreg_staging_db</REGISTRATION_SERVICE_MONGODB_NAME>
+                        <OAUTH2_RESOURCE_SERVER_JWT_JWK_SET_URI>
+                            https://robxtask.salzburgresearch.at:8443/auth/realms/master/protocol/openid-connect/certs
+                        </OAUTH2_RESOURCE_SERVER_JWT_JWK_SET_URI>
+                        <OAUTH2_RESOURCE_SERVER_JWT_ISSUER_URI>
+                            https://robxtask.salzburgresearch.at:8443/auth/realms/master
+                        </OAUTH2_RESOURCE_SERVER_JWT_ISSUER_URI>
+                        <DEVICE_REGISTRATION_API_KEY_NAME>testKeyName</DEVICE_REGISTRATION_API_KEY_NAME>
+                        <DEVICE_REGISTRATION_API_KEY_VALUE>testKey</DEVICE_REGISTRATION_API_KEY_VALUE>
+                    </environmentVariables>
                 </configuration>
             </plugin>
         </plugins>

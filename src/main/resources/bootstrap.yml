@@ -16,6 +16,13 @@ spring:
       # service discovery is disabled by default and should be enabled (set to true) for the "cloud mode".
       # it can be set via an environment variable or the config server
       enabled: ${discovery.enabled:${DISCOVERY_ENABLED:false}}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_RESOURCE_SERVER_JWT_ISSUER_URI:http://localhost:8080/auth/realms/master}
+          jwk-set-uri: ${OAUTH2_RESOURCE_SERVER_JWT_JWK_SET_URI:http://localhost:8080/auth/realms/master/protocol/openid-connect/certs}
+
 logstash:
   uri: ${vcap.services.logstash-service.credentials.url:${LOGSTASH_URI:localhost:5000}}
 
@@ -24,3 +31,6 @@ robxtask:
     mongodb:
       url: ${REGISTRATION_SERVICE_MONGODB_URL:mongodb://root:password@localhost:27017}
       name: ${REGISTRATION_SERVICE_MONGODB_NAME:reg_serv_dev_db}
+    device:
+      api-key-name: ${DEVICE_REGISTRATION_API_KEY_NAME:register_device_key}
+      api-key-value: ${DEVICE_REGISTRATION_API_KEY_VALUE:none}  # "none" is not a valid api key value
