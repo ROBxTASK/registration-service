@@ -15,7 +15,7 @@ node('robxtask-jenkins-slave') {
         }
 
         stage('Build Docker - staging') {
-            sh 'docker build -t robxtask/registration-service:staging ./target'
+            sh 'docker build -t robxtask/registration-service:staging .'
         }
 
         stage('Push Docker - staging') {
@@ -48,7 +48,7 @@ node('robxtask-jenkins-slave') {
         }
 
         stage('Build Docker - ' + env.TAG_NAME) {
-            sh 'docker build -t robxtask/registration-service ./target'
+            sh 'docker build -t robxtask/registration-service .'
         }
 
         stage('Push Docker - ' + env.TAG_NAME) {
