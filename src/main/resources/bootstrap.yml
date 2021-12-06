@@ -1,7 +1,7 @@
 server:
   port: ${PORT:8081}
-  tomcat:
-    use-forward-headers: true
+  use-forward-headers: true
+
 spring:
   application:
     # the name of the application represents the global identifier of this microservice.
