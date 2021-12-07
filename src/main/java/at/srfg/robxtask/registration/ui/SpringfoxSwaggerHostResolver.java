@@ -57,7 +57,7 @@ public class SpringfoxSwaggerHostResolver implements WebMvcOpenApiTransformation
     private Server getServerFromConfig() {
         Server server = new Server();
         server.setUrl(hostUri);
-        server.setDescription("configured Url");
+        server.setDescription("Configured Url");
         return server;
     }
 

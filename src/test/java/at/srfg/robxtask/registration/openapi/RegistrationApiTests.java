@@ -33,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
 @SpringBootTest(classes = RegistrationServiceApp.class)
-//, exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 public class RegistrationApiTests {
 
     @Autowired
