@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
-import java.io.Serial;
-
 @Configuration
 @EnableAutoConfiguration
 @EnableFeignClients
@@ -40,7 +38,6 @@ public class RegistrationServiceApp implements CommandLineRunner {
     }
 
     static class ExitException extends RuntimeException implements ExitCodeGenerator {
-        @Serial
         private static final long serialVersionUID = 1L;
 
         ExitException() {
