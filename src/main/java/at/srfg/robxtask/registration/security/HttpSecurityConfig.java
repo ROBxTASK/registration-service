@@ -7,7 +7,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 @EnableWebSecurity
 public class HttpSecurityConfig {
@@ -20,8 +19,8 @@ public class HttpSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             final DeviceConfig config = getDeviceConfig();
             http
-                    .regexMatcher("/device(s)?.*")
-                    .addFilterBefore(new ApiKeyFilter(config.getApiKeyName(), config.getApiKeyValue()), AbstractPreAuthenticatedProcessingFilter.class).csrf().disable();
+                    .regexMatcher("/device(s)?.*").csrf().disable()
+                    .addFilter(new ApiKeyFilter(config.getApiKeyName(), config.getApiKeyValue()));
         }
 
         @Bean

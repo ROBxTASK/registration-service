@@ -2,22 +2,27 @@ package at.srfg.robxtask.registration.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-public class ApiKeyFilter implements Filter {
+public class ApiKeyFilter extends AnonymousAuthenticationFilter {
 
-    private Logger log = LoggerFactory.getLogger(ApiKeyFilter.class);
+    private final Logger log = LoggerFactory.getLogger(ApiKeyFilter.class);
 
     private final String keyName;
     private final String expectedKeyValue;
 
-    public ApiKeyFilter(String keyName, String expectedKeyValue) {
-        this.keyName = keyName;
-        this.expectedKeyValue = expectedKeyValue;
+    public ApiKeyFilter(String apiKeyName, String apiKeyValue) {
+        super("anonymous-with-api-key");
+        this.keyName = apiKeyName;
+        this.expectedKeyValue = apiKeyValue;
     }
 
     @Override
@@ -30,11 +35,17 @@ public class ApiKeyFilter implements Filter {
         HttpServletResponse httpRes = (HttpServletResponse) res;
         final Map<String, String[]> params = req.getParameterMap();
         if (params == null || !params.containsKey(keyName)) {
-            httpRes.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            final String msg = "required key not in request";
+            log.debug(msg);
+            httpRes.sendError(HttpServletResponse.SC_UNAUTHORIZED, msg);
         } else if (!expectedKeyValue.equals(params.get(keyName)[0])) {
-            httpRes.sendError(HttpServletResponse.SC_FORBIDDEN);
+            final String msg = "invalid key in request";
+            log.debug(msg);
+            httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, msg);
+        } else {
+            log.debug("valid key named '" + keyName + "' found, access granted.");
+            chain.doFilter(req, res);
         }
-        chain.doFilter(req, res);
     }
 
 }
