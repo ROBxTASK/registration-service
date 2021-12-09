@@ -46,7 +46,7 @@ public class RedirectTests {
         this.mockMvc.perform(builder)
                // .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.redirectedUrl
-                        ("/swagger-ui/index.html"));
+                        ("http://localhost/swagger-ui/index.html"));
 
     }
 }
