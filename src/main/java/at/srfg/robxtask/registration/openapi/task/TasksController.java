@@ -1,6 +1,6 @@
 package at.srfg.robxtask.registration.openapi.task;
 
-import at.srfg.robxtask.registration.openapi.api.ApiUtil;
+import at.srfg.robxtask.registration.openapi.ApiResponseUtil;
 import at.srfg.robxtask.registration.openapi.api.TasksApi;
 import at.srfg.robxtask.registration.openapi.model.Task;
 import at.srfg.robxtask.registration.persistence.MongoConnector;
@@ -58,7 +58,7 @@ public class TasksController implements TasksApi {
                         for (Document task : tasks) {
                             res.add(mapper.readValue(task.toJson(), Task.class));
                         }
-                        ApiUtil.setExampleResponse(request, "application/json", mapper.writeValueAsString(res));
+                        ApiResponseUtil.setContentResponse(request, "application/json", mapper.writeValueAsString(res));
                         break;
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);

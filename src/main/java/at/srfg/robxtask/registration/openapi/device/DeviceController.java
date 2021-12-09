@@ -2,8 +2,8 @@ package at.srfg.robxtask.registration.openapi.device;
 
 import at.srfg.robxtask.registration.exception.DeviceAlreadyExistsException;
 import at.srfg.robxtask.registration.exception.DeviceNotAcceptableException;
-import at.srfg.robxtask.registration.exception.InvalidApiKeyException;
-import at.srfg.robxtask.registration.openapi.api.ApiUtil;
+import at.srfg.robxtask.registration.exception.DeviceNotFoundException;
+import at.srfg.robxtask.registration.openapi.ApiResponseUtil;
 import at.srfg.robxtask.registration.openapi.api.DeviceApi;
 import at.srfg.robxtask.registration.openapi.model.Device;
 import at.srfg.robxtask.registration.persistence.MongoConnector;
@@ -20,14 +20,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Optional;
 
 import static com.mongodb.client.model.Filters.eq;
 
-@Controller
+@RestController
 @Api(tags = {"device"})
 public class DeviceController implements DeviceApi {
 
@@ -52,7 +52,7 @@ public class DeviceController implements DeviceApi {
     private static final Logger log = LoggerFactory.getLogger(DeviceController.class);
 
     @Override
-    public ResponseEntity<Object> addDevice(Device body) {
+    public ResponseEntity<Void> addDevice(Device body) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
@@ -63,6 +63,7 @@ public class DeviceController implements DeviceApi {
                     }
                     try {
                         devices.insertOne(Document.parse(mapperBuilder.build().writeValueAsString(body)));
+                        break;
                     } catch (JsonProcessingException e) {
                         throw new DeviceNotAcceptableException(e.getMessage());
                     }
@@ -83,12 +84,13 @@ public class DeviceController implements DeviceApi {
                                 .projection(Projections.fields(Projections.excludeId()))
                                 .first();
                         if (device == null) {
-                            throw new InvalidApiKeyException(id);
+                            throw new DeviceNotFoundException(id);
                         }
-                        ApiUtil.setExampleResponse(
+                        ApiResponseUtil.setContentResponse(
                                 request,
                                 "application/json",
                                 mapperBuilder.build().writeValueAsString(device));
+                        break;
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
@@ -113,10 +115,27 @@ public class DeviceController implements DeviceApi {
                                 searchDoc,
                                 replacement,
                                 options);
-                      //  return new ResponseEntity<>(HttpStatus.OK);
+                        break;
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> delDeviceById(String id) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    MongoCollection<Document> devicesCol = getDeviceCollection();
+                    final Document device = devicesCol.findOneAndDelete(eq("DeviceID", id));
+                    if (device == null) {
+                        throw new DeviceNotFoundException(id);
+                    }
+                    break;
                 }
             }
         });

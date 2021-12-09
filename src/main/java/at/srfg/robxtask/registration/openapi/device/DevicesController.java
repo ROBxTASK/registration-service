@@ -1,6 +1,6 @@
 package at.srfg.robxtask.registration.openapi.device;
 
-import at.srfg.robxtask.registration.openapi.api.ApiUtil;
+import at.srfg.robxtask.registration.openapi.ApiResponseUtil;
 import at.srfg.robxtask.registration.openapi.api.DevicesApi;
 import at.srfg.robxtask.registration.openapi.model.Device;
 import at.srfg.robxtask.registration.persistence.MongoConnector;
@@ -18,14 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @Api(tags = {"devices"})
 public class DevicesController implements DevicesApi {
 
@@ -62,7 +62,7 @@ public class DevicesController implements DevicesApi {
                         for (Document device : devices) {
                             res.add(mapper.readValue(device.toJson(), Device.class));
                         }
-                        ApiUtil.setExampleResponse(request, "application/json", mapper.writeValueAsString(res));
+                        ApiResponseUtil.setContentResponse(request, "application/json", mapper.writeValueAsString(res));
                         break;
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);

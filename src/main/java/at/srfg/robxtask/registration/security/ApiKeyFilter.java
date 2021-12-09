@@ -23,15 +23,15 @@ public class ApiKeyFilter extends AnonymousAuthenticationFilter {
         super("anonymous-with-api-key");
         this.keyName = apiKeyName;
         this.expectedKeyValue = apiKeyValue;
+        if (expectedKeyValue == null || expectedKeyValue.isEmpty() || "none".equals(expectedKeyValue)) {
+            final String msg = keyName + " not configured!";
+            log.error(msg);
+            throw new RuntimeException(msg);
+        }
     }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        if (expectedKeyValue == null || expectedKeyValue.isEmpty() || "none".equals(expectedKeyValue)) {
-            final String msg = keyName + " not configured!";
-            log.error(msg);
-            throw new ServletException(msg);
-        }
         HttpServletResponse httpRes = (HttpServletResponse) res;
         final Map<String, String[]> params = req.getParameterMap();
         if (params == null || !params.containsKey(keyName)) {
