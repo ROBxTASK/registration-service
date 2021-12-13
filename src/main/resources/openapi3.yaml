@@ -16,10 +16,10 @@ externalDocs:
   description: Find out more about the ROBxTASK platform
   url: https://robxtask.salzburgresearch.at/
 servers:
-  - url: http://localhost:8080/registration-service/
-    description: Local development server
   - url: https://robxtask.salzburgresearch.at/robxtask/registration-service/
     description: Staging server
+  - url: http://localhost:8080/registration-service/
+    description: Local development server
 paths:
   /version:
     get:
