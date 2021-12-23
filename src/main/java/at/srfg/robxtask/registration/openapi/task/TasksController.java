@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -34,6 +35,9 @@ public class TasksController implements TasksApi {
     public TasksController(NativeWebRequest request) {
         this.request = request;
     }
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder mapperBuilder;
 
     @Override
     public Optional<NativeWebRequest> getRequest() {
@@ -59,7 +63,7 @@ public class TasksController implements TasksApi {
                             res.add(mapper.readValue(task.toJson(), Task.class));
                         }
                         ApiResponseUtil.setContentResponse(request, "application/json", mapper.writeValueAsString(res));
-                        break;
+                        break; // do only once, even if more content-types are in request
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
@@ -68,7 +72,7 @@ public class TasksController implements TasksApi {
         });
 
         return new ResponseEntity<>(HttpStatus.OK);
-}
+    }
 
     private MongoCollection<Document> getTaskCollection() {
         return mongo.getCollection("tasks");

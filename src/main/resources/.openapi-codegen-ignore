@@ -6,5 +6,6 @@
 **/DeviceApiController.java
 **/DevicesApiController.java
 **/VersionApiController.java
+**/TaskApiController.java
 **/TasksApiController.java
 **/org/openapitools/**

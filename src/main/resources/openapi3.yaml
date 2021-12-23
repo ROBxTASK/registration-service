@@ -85,7 +85,9 @@ paths:
           content: {}
 
       security:
-      - register_device_key: []
+      # - register_device_key: []
+      # requires valid user in future!
+      - register_task_auth: []
 
   /device:
     put:
@@ -105,13 +107,10 @@ paths:
           description: Success
           content: {}
         400:
-          description: Invalid ID supplied
+          description: Bad Request. Device put not successful. Content malformed.
           content: {}
         404:
           description: Device not found
-          content: {}
-        405:
-          description: Validation exception
           content: {}
       x-codegen-request-body-name: body
       security:
@@ -182,6 +181,30 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
       security:
         - register_task_auth: []
+
+  /task:
+    post:
+      operationId: addTask
+      tags:
+        - task
+      description: post a new task object
+      requestBody:
+        description: Task object to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      responses:
+        201:
+          description: task added
+          content: {}
+        400:
+          description: task post not successful, bad request.
+          content: {}
+      x-codegen-request-body-name: body
+      security:
+        - register_device_key: []
 
 components:
   schemas:
@@ -417,10 +440,37 @@ components:
       title: Task
       type: object
       properties:
+        TaskID:
+          type: string
         TaskName:
           type: string
         TaskDescription:
           type: string
+        TaskOwner:
+          # 1. Schritt trust user
+          # extract from token / bzw. check ob's übereinstimmt
+          # TODO: get identity/user-info { -> Use UI-Token for this request
+          #    "ublPartyID": "104",
+          #    "ublPersonID": "102"
+          #}
+          # curl -X GET --header 'Accept: application/json' --header 'Authorization: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkTzg3aVFOM0Y5UnppY2IzY19teFZDb1B6VnpZbHJYbThvRlprS1VoeW84In0.eyJqdGkiOiIyMGIwZmViNC00NWYzLTRhMTktYTNmMC00YjQ0MjQ4MDljMGIiLCJleHAiOjE2Mzk2NDg5NzQsIm5iZiI6MCwiaWF0IjoxNjM5NjQ4MDc0LCJpc3MiOiJodHRwczovL3JvYnh0YXNrLnNhbHpidXJncmVzZWFyY2guYXQ6ODQ0My9hdXRoL3JlYWxtcy9tYXN0ZXIiLCJhdWQiOiJuaW1ibGVfY2xpZW50Iiwic3ViIjoiYjQ3ZDc5YmMtYjE2YS00OTYwLWE3ZjctMDRiZGFmNmUxZjJlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoibmltYmxlX2NsaWVudCIsImF1dGhfdGltZSI6MCwic2Vzc2lvbl9zdGF0ZSI6Ijk5NmQyNmFjLWExOTgtNDE5Yi05NmM5LWU4MGIzODZiNDJjMCIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOltdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsibmltYmxlX3VzZXIiLCJpbml0aWFsX3JlcHJlc2VudGF0aXZlIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJuYW1lIjoiRmVsaXggU3Ryb2htZWllciIsInByZWZlcnJlZF91c2VybmFtZSI6ImZzdHJvaCtyb2J4dGFzazJAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6IkZlbGl4IiwiZmFtaWx5X25hbWUiOiJTdHJvaG1laWVyIiwiZW1haWwiOiJmc3Ryb2grcm9ieHRhc2syQGdtYWlsLmNvbSJ9.FQNqhHXxvM-ZZmGoptl8dHNoTMhRIoMBe2uCXld6y29t9p-RAf2cI3ZICJiTyP0KjaOwn32kdXWgifmhj4uF9_kvCxEKosj015sJSfiXBLPvVBl94QhafL2T9UKer9YmLEf31_l3N5Pu0UZ3ZMLLk81fhl2VWVGrsNwNhCm8n-g6huPt7PHorrnXfpc2Y2cs_Jst3UkFE4B41vMEV0kUgzusKeevxTj02uzBYm9Z6BvpkeRB7qtFBu5sgI-a2Dmv-vGxMkm3-4DRF1I6CIcG0X6IJHADw-W7A1bN3qYuL3yv9KUTJ8IJkUCZE0JF_u4Z8jqn-vIO3qv4Bb8mCQc0Fg' 'https://robxtask.salzburgresearch.at/robxtask/identity/user-info'
+          # -> returns the info from currently logged in user (if token is valid)
+          type: string
+          description: personID of the user who created this task.
+        TaskIsPublic:
+          type: boolean
+        UsedDevices:
+          # Devices as *copy*! Referenced devices (with same DeviceID) will not change on device updates!
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+        BlocklyWorkspace:
+          type: string
+          # encoded xml-string
+        ConfigParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfigParam'
 
   responses:
     UnauthorizedError:
