@@ -121,7 +121,7 @@ paths:
       operationId: addDevice
       tags:
         - device
-      description: post a device new object
+      description: post a new device object
       requestBody:
         description: Device object that needs to be added
         content:
@@ -134,10 +134,7 @@ paths:
           description: device added
           content: {}
         400:
-          description: device post not successful, bad request.
-          content: {}
-        409:
-          description: device not accepted, ID already existing
+          description: Bad Request. Device post not successful. Content malformed or ID already exists.
           content: {}
       x-codegen-request-body-name: body
       security:
@@ -319,8 +316,12 @@ components:
       properties:
         DeviceID:
           type: string
+          description: ID of the device as defined by the Owner
         DeviceName:
           type: string
+        DeviceOwner:
+          type: string
+          description: partyID of the company which owns the device
         DeviceDescription:
           type: string
         Skills:

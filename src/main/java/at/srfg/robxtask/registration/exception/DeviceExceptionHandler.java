@@ -19,7 +19,7 @@ public class DeviceExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({DeviceAlreadyExistsException.class, DeviceNotAcceptableException.class})
     public void springHandleNotAcceptable(HttpServletResponse response, Exception e) throws IOException {
-        response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage());
+        response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 
 }
