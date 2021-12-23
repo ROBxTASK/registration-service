@@ -36,9 +36,6 @@ public class TasksController implements TasksApi {
         this.request = request;
     }
 
-    @Autowired
-    private Jackson2ObjectMapperBuilder mapperBuilder;
-
     @Override
     public Optional<NativeWebRequest> getRequest() {
         return Optional.ofNullable(request);
@@ -49,13 +46,16 @@ public class TasksController implements TasksApi {
     @Autowired
     private MongoConnector mongo;
 
+    @Autowired
+    private Jackson2ObjectMapperBuilder mapperBuilder;
+
     @Override
     public ResponseEntity<List<Task>> getTasks() {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     try {
-                        final ObjectMapper mapper = new ObjectMapper();
+                        final ObjectMapper mapper = mapperBuilder.build();
                         MongoCollection<Document> tasksCol = getTaskCollection();
                         final FindIterable<Document> tasks = tasksCol.find().projection(Projections.fields(Projections.exclude("_id")));
                         List<Task> res = new ArrayList<>();
