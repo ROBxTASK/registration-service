@@ -57,13 +57,18 @@ public class DeviceController implements DeviceApi {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     MongoCollection<Document> devices = getDeviceCollection();
-                    Document device = devices.find(new Document("DeviceID", body.getDeviceID())).first();
+                    final Document searchDoc = new Document("DeviceID", body.getDeviceID());
+                    // DeviceOwner + DeviceID build the unique key
+                    if (body.getDeviceOwner() != null) {
+                        searchDoc.put("DeviceOwner", body.getDeviceOwner());
+                    }
+                    Document device = devices.find(searchDoc).first();
                     if (device != null) {
                         throw new DeviceAlreadyExistsException(body.getDeviceID());
                     }
                     try {
                         devices.insertOne(Document.parse(mapperBuilder.build().writeValueAsString(body)));
-                        break;
+                        break; // insert only once, even if more content-types are in request
                     } catch (JsonProcessingException e) {
                         throw new DeviceNotAcceptableException(e.getMessage());
                     }

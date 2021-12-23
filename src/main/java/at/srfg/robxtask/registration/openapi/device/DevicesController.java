@@ -63,7 +63,7 @@ public class DevicesController implements DevicesApi {
                             res.add(mapper.readValue(device.toJson(), Device.class));
                         }
                         ApiResponseUtil.setContentResponse(request, "application/json", mapper.writeValueAsString(res));
-                        break;
+                        break; // do only once, even if more content-types are in request
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
