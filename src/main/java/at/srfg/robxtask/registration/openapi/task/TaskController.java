@@ -7,6 +7,7 @@ import at.srfg.robxtask.registration.openapi.model.Task;
 import at.srfg.robxtask.registration.persistence.MongoConnector;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.MongoCollection;
+import io.swagger.annotations.Api;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,14 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Optional;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-12-23T10:21:36.396078300+01:00[Europe/Berlin]")
 @Controller
-@RequestMapping("${openapi.rOBxTASKRegistrationService.base-path:/robxtask/registration-service}")
+@Api(tags = {"tasks"})
 public class TaskController implements TaskApi {
 
     private final NativeWebRequest request;
