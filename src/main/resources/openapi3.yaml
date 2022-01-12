@@ -30,7 +30,7 @@ paths:
         get the service id and version string
       responses:
         200:
-          description: Successful response
+          description: OK
           content:
             application/json:
               schema:
@@ -51,7 +51,7 @@ paths:
             type: string
       responses:
         200:
-          description: Successful response
+          description: OK
           content:
             application/json:
               schema:
@@ -76,8 +76,7 @@ paths:
             type: string
       responses:
         200:
-          description: Successful response
-          content: {}
+          description: OK
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -87,7 +86,7 @@ paths:
       security:
       # - register_device_key: []
       # requires valid user in future!
-      - register_task_auth: []
+        - register_task_auth: []
 
   /device:
     put:
@@ -104,8 +103,7 @@ paths:
         required: true
       responses:
         200:
-          description: Success
-          content: {}
+          description: OK
         400:
           description: Bad Request. Device put not successful. Content malformed.
           content: {}
@@ -129,6 +127,8 @@ paths:
               $ref: '#/components/schemas/Device'
         required: true
       responses:
+        200:
+          description: OK
         201:
           description: device added
           content: {}
@@ -148,7 +148,7 @@ paths:
         get list of devices
       responses:
         200:
-          description: Successful response
+          description: OK
           content:
             application/json:
               schema:
@@ -170,7 +170,7 @@ paths:
         requires valid user / JWT token
       responses:
         200:
-          description: Successful response
+          description: OK
           content:
             application/json:
               schema:
@@ -196,6 +196,8 @@ paths:
               $ref: '#/components/schemas/Task'
         required: true
       responses:
+        200:
+          description: OK
         201:
           description: task added
           content: {}
@@ -204,7 +206,7 @@ paths:
           content: {}
       x-codegen-request-body-name: body
       security:
-        - register_device_key: []
+        - register_task_auth: []
 
 components:
   schemas:
