@@ -4,6 +4,7 @@ import at.srfg.robxtask.registration.openapi.ApiResponseUtil;
 import at.srfg.robxtask.registration.openapi.api.TasksApi;
 import at.srfg.robxtask.registration.openapi.model.Task;
 import at.srfg.robxtask.registration.persistence.MongoConnector;
+import at.srfg.robxtask.registration.security.AsyncUserInfoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.FindIterable;
@@ -49,6 +50,9 @@ public class TasksController implements TasksApi {
     @Autowired
     private Jackson2ObjectMapperBuilder mapperBuilder;
 
+    @Autowired
+    private AsyncUserInfoService userInfoService;
+
     @Override
     public ResponseEntity<List<Task>> getTasks() {
         getRequest().ifPresent(request -> {
@@ -57,14 +61,14 @@ public class TasksController implements TasksApi {
                     try {
                         final ObjectMapper mapper = mapperBuilder.build();
                         MongoCollection<Document> tasksCol = getTaskCollection();
-                        final FindIterable<Document> tasks = tasksCol.find().projection(Projections.fields(Projections.exclude("_id")));
+                        final FindIterable<Document> tasks = tasksCol.find().projection(Projections.fields(Projections.exclude("_id"))).filter(new Document("TaskOwner", userInfoService.resolve().getUblPersonID()));
                         List<Task> res = new ArrayList<>();
                         for (Document task : tasks) {
                             res.add(mapper.readValue(task.toJson(), Task.class));
                         }
                         ApiResponseUtil.setContentResponse(request, "application/json", mapper.writeValueAsString(res));
                         break; // do only once, even if more content-types are in request
-                    } catch (JsonProcessingException e) {
+                    } catch (JsonProcessingException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }

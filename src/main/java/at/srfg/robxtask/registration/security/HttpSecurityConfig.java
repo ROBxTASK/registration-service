@@ -34,6 +34,19 @@ public class HttpSecurityConfig {
 
     @Order(2)
     @Configuration
+    public static class OpenIdConnectBasedSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.regexMatcher("/task(s)?.*")
+                    .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+                    .csrf().disable()
+                    .authorizeRequests().anyRequest().authenticated();
+        }
+    }
+
+    @Order(3)
+    @Configuration
     public static class PublicAccessSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
         @Override
@@ -45,19 +58,6 @@ public class HttpSecurityConfig {
                     "/v2/api-docs",
                     "/v3/api-docs",
                     "/version").permitAll();
-        }
-    }
-
-    @Order(3)
-    @Configuration
-    public static class OpenIdConnectBasedSecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.regexMatcher("/task(s)?.*")
-                    .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                    .csrf().disable()
-                    .authorizeRequests().anyRequest().authenticated();
         }
     }
 

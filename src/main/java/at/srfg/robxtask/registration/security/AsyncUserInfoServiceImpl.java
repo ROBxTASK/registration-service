@@ -1,6 +1,5 @@
 package at.srfg.robxtask.registration.security;
 
-import at.srfg.robxtask.registration.openapi.device.DevicesController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,19 +28,27 @@ public class AsyncUserInfoServiceImpl implements AsyncUserInfoService {
     @Autowired
     private Jackson2ObjectMapperBuilder mapperBuilder;
 
-    private static final Logger log = LoggerFactory.getLogger(DevicesController.class);
+    private static final Logger log = LoggerFactory.getLogger(AsyncUserInfoServiceImpl.class);
 
     @Async
     @Override
     public UserInfo resolve() throws InterruptedException {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Jwt token = (Jwt) authentication.getPrincipal();
+        final Object principal = authentication.getPrincipal();
+        String bearer = "";
+        if (principal instanceof Jwt) {
+            Jwt token = (Jwt) principal;
+            bearer = token.getTokenValue();
+        } else {
+            log.debug("no valid authentication token: {}", authentication);
+            throw new InvalidBearerTokenException("no valid token");
+        }
         String url = identityServiceUrl.replaceAll("/$", "") + "/user-info";
 
         final RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Authorization", "Bearer "+ token.getTokenValue());
+        headers.add("Authorization", "Bearer "+ bearer);
         ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<String> result = restTemplate.exchange(url,
                 HttpMethod.GET,
