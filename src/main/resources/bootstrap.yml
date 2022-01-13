@@ -40,3 +40,4 @@ robxtask:
       api-key-value: ${DEVICE_REGISTRATION_API_KEY_VALUE:none}  # "none" is not a valid api key value
     swagger:
       external-address: ${REGISTRATION_SERVICE_EXTERNAL_ADDRESS:http://localhost:80/}
+    identity-service-url: ${IDENTITY_SERVICE_URL:http://localhost:80/identity}

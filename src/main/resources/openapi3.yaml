@@ -166,7 +166,7 @@ paths:
       tags:
         - tasks
       description:
-        get list of tasks - not yet implemented!
+        get list of tasks
         requires valid user / JWT token
       responses:
         200:

@@ -1,10 +1,11 @@
 package at.srfg.robxtask.registration.openapi.task;
 
-import at.srfg.robxtask.registration.exception.DeviceAlreadyExistsException;
-import at.srfg.robxtask.registration.exception.DeviceNotAcceptableException;
+import at.srfg.robxtask.registration.exception.TaskAlreadyExistsException;
+import at.srfg.robxtask.registration.exception.TaskNotAcceptableException;
 import at.srfg.robxtask.registration.openapi.api.TaskApi;
 import at.srfg.robxtask.registration.openapi.model.Task;
 import at.srfg.robxtask.registration.persistence.MongoConnector;
+import at.srfg.robxtask.registration.security.AsyncUserInfoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.MongoCollection;
 import io.swagger.annotations.Api;
@@ -20,7 +21,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import java.util.Optional;
 
 @Controller
-@Api(tags = {"tasks"})
+@Api(tags = {"task"})
 public class TaskController implements TaskApi {
 
     private final NativeWebRequest request;
@@ -41,21 +42,27 @@ public class TaskController implements TaskApi {
     @Autowired
     private Jackson2ObjectMapperBuilder mapperBuilder;
 
+    @Autowired
+    private AsyncUserInfoService userInfoService;
+
     @Override
     public ResponseEntity<Void> addTask(Task body) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    MongoCollection<Document> devices = getTaskCollection();
-                    Document device = devices.find(new Document("TaskID", body.getTaskID())).first();
-                    if (device != null) {
-                        throw new DeviceAlreadyExistsException(body.getTaskID());
+                    MongoCollection<Document> tasks = getTaskCollection();
+                    Document task = tasks.find(new Document("TaskID", body.getTaskID())).first();
+                    if (task != null) {
+                        throw new TaskAlreadyExistsException(body.getTaskID());
                     }
                     try {
-                        devices.insertOne(Document.parse(mapperBuilder.build().writeValueAsString(body)));
+                        body.setTaskOwner(userInfoService.resolve().getUblPersonID());
+                        tasks.insertOne(Document.parse(mapperBuilder.build().writeValueAsString(body)));
                         break; // insert only once, even if more content-types are in request
                     } catch (JsonProcessingException e) {
-                        throw new DeviceNotAcceptableException(e.getMessage());
+                        throw new TaskNotAcceptableException(e.getMessage());
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }

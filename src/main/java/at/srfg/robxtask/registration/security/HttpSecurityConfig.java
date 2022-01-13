@@ -48,13 +48,16 @@ public class HttpSecurityConfig {
         }
     }
 
-    @Order(3) // should be default, if the above do not match
+    @Order(3)
     @Configuration
     public static class OpenIdConnectBasedSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+            http.regexMatcher("/task(s)?.*")
+                    .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+                    .csrf().disable()
+                    .authorizeRequests().anyRequest().authenticated();
         }
     }
 

@@ -9,3 +9,4 @@
 **/TaskApiController.java
 **/TasksApiController.java
 **/org/openapitools/**
+**/OpenAPI2SpringBoot.java
