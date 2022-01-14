@@ -32,10 +32,12 @@ public class VersionController implements VersionApi {
 
     @Override
     public ResponseEntity<Version> getVersion() {
-        return new ResponseEntity<Version>(
-                new Version()
-                        .serviceId("registration-service")
-                        .version("1.1.0"),
+        final Version version = new Version()
+                .serviceId("registration-service")
+                .version("1.1.0");
+        log.debug("version requested, returning {} {}", version.getServiceId(), version.getVersion());
+        return new ResponseEntity<>(
+                version,
                 HttpStatus.OK);
     }
 }

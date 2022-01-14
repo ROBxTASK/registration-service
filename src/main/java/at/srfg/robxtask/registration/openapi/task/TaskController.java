@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.MongoCollection;
 import io.swagger.annotations.Api;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,18 +47,23 @@ public class TaskController implements TaskApi {
     @Autowired
     private AsyncUserInfoService userInfoService;
 
+    private static final Logger log = LoggerFactory.getLogger(TaskController.class);
+
     @Override
     public ResponseEntity<Void> addTask(Task body) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     MongoCollection<Document> tasks = getTaskCollection();
-                    Document task = tasks.find(new Document("TaskID", body.getTaskID())).first();
+                    final String taskID = body.getTaskID();
+                    Document task = tasks.find(new Document("TaskID", taskID)).first();
                     if (task != null) {
-                        throw new TaskAlreadyExistsException(body.getTaskID());
+                        throw new TaskAlreadyExistsException(taskID);
                     }
                     try {
-                        body.setTaskOwner(userInfoService.resolve().getUblPersonID());
+                        final String ublPersonID = userInfoService.resolve().getUblPersonID();
+                        body.setTaskOwner(ublPersonID);
+                        log.debug("Inserting new task with TaskID {} for TaskOwner {}", taskID, ublPersonID);
                         tasks.insertOne(Document.parse(mapperBuilder.build().writeValueAsString(body)));
                         break; // insert only once, even if more content-types are in request
                     } catch (JsonProcessingException e) {

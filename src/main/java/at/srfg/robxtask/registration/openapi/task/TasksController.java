@@ -61,11 +61,13 @@ public class TasksController implements TasksApi {
                     try {
                         final ObjectMapper mapper = mapperBuilder.build();
                         MongoCollection<Document> tasksCol = getTaskCollection();
-                        final FindIterable<Document> tasks = tasksCol.find().projection(Projections.fields(Projections.exclude("_id"))).filter(new Document("TaskOwner", userInfoService.resolve().getUblPersonID()));
+                        final String ublPersonID = userInfoService.resolve().getUblPersonID();
+                        final FindIterable<Document> tasks = tasksCol.find().projection(Projections.fields(Projections.exclude("_id"))).filter(new Document("TaskOwner", ublPersonID));
                         List<Task> res = new ArrayList<>();
                         for (Document task : tasks) {
                             res.add(mapper.readValue(task.toJson(), Task.class));
                         }
+                        log.debug("Returning {} tasks for TaskOwner {} (ublPersonID)", res.size(), ublPersonID);
                         ApiResponseUtil.setContentResponse(request, "application/json", mapper.writeValueAsString(res));
                         break; // do only once, even if more content-types are in request
                     } catch (JsonProcessingException | InterruptedException e) {
