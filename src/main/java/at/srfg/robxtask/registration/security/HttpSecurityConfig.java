@@ -40,6 +40,7 @@ public class HttpSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http.regexMatcher("/task(s)?.*")
                     .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+                    .cors().and()
                     .csrf().disable()
                     .authorizeRequests().anyRequest().authenticated();
         }
