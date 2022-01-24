@@ -52,7 +52,7 @@ public class RegistrationApiTests {
     @Value("${robxtask.registration-service.device.api-key-name}")
     private String apiKeyName;
 
-    @Value("${robxtask.registration-service.device.api-key-value}")
+    @Value("${robxtask.registration-service.device.api-key-secret}")
     private String apiKeyValue;
 
     private final String exampleDeviceFilename = "example-device.json";

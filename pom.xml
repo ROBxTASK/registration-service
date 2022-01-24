@@ -269,7 +269,7 @@
                             https://robxtask.salzburgresearch.at:8443/auth/realms/master
                         </OAUTH2_RESOURCE_SERVER_JWT_ISSUER_URI>
                         <DEVICE_REGISTRATION_API_KEY_NAME>testKeyName</DEVICE_REGISTRATION_API_KEY_NAME>
-                        <DEVICE_REGISTRATION_API_KEY_VALUE>testKey</DEVICE_REGISTRATION_API_KEY_VALUE>
+                        <DEVICE_REGISTRATION_API_KEY_SECRET>testKey</DEVICE_REGISTRATION_API_KEY_SECRET>
                     </environmentVariables>
                 </configuration>
             </plugin>
