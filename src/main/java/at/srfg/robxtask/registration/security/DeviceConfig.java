@@ -3,15 +3,15 @@ package at.srfg.robxtask.registration.security;
 public class DeviceConfig {
     String apiKeyName;
 
-    public String getApiKeyValue() {
-        return apiKeyValue;
+    public String getApiKeySecret() {
+        return apiKeySecret;
     }
 
-    public void setApiKeyValue(String apiKeyValue) {
-        this.apiKeyValue = apiKeyValue;
+    public void setApiKeySecret(String apiKeySecret) {
+        this.apiKeySecret = apiKeySecret;
     }
 
-    String apiKeyValue;
+    String apiKeySecret;
 
     public String getApiKeyName() {
         return apiKeyName;
@@ -25,7 +25,7 @@ public class DeviceConfig {
     public String toString() {
         return "DeviceConfig{" +
                 "apiKeyName='" + apiKeyName + '\'' +
-                ", apiKeyValue='" + apiKeyValue + '\'' +
+                ", apiKeySecret='" + apiKeySecret + '\'' +
                 '}';
     }
 }

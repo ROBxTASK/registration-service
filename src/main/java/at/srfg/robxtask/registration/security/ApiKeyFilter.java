@@ -17,13 +17,13 @@ public class ApiKeyFilter extends AnonymousAuthenticationFilter {
     private final Logger log = LoggerFactory.getLogger(ApiKeyFilter.class);
 
     private final String keyName;
-    private final String expectedKeyValue;
+    private final String expectedApiKeySecret;
 
-    public ApiKeyFilter(String apiKeyName, String apiKeyValue) {
+    public ApiKeyFilter(String apiKeyName, String apiKeySecret) {
         super("anonymous-with-api-key");
         this.keyName = apiKeyName;
-        this.expectedKeyValue = apiKeyValue;
-        if (expectedKeyValue == null || expectedKeyValue.isEmpty() || "none".equals(expectedKeyValue)) {
+        this.expectedApiKeySecret = apiKeySecret;
+        if (expectedApiKeySecret == null || expectedApiKeySecret.isEmpty() || "none".equals(expectedApiKeySecret)) {
             final String msg = keyName + " not configured!";
             log.error(msg);
             throw new RuntimeException(msg);
@@ -38,7 +38,7 @@ public class ApiKeyFilter extends AnonymousAuthenticationFilter {
             final String msg = "required key not in request";
             log.debug(msg);
             httpRes.sendError(HttpServletResponse.SC_UNAUTHORIZED, msg);
-        } else if (!expectedKeyValue.equals(params.get(keyName)[0])) {
+        } else if (!expectedApiKeySecret.equals(params.get(keyName)[0])) {
             final String msg = "invalid key in request";
             log.debug(msg);
             httpRes.sendError(HttpServletResponse.SC_FORBIDDEN, msg);

@@ -53,7 +53,7 @@ public class RegistrationApiTests {
     private String apiKeyName;
 
     @Value("${robxtask.registration-service.device.api-key-secret}")
-    private String apiKeyValue;
+    private String apiKeySecret;
 
     private final String exampleDeviceFilename = "example-device.json";
     private final String malformedDevice1Filename = "malformed-device-1.json";
@@ -86,21 +86,21 @@ public class RegistrationApiTests {
         mockMvc.perform(get("/devices?" + apiKeyName + "=wrongKey")) // deny/403
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get("/devices?" + apiKeyName + "=" + apiKeyValue)) // allow/200
+        mockMvc.perform(get("/devices?" + apiKeyName + "=" + apiKeySecret)) // allow/200
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testDeviceApiAccessControl() throws Exception {
 
-        mockMvc.perform(get("/device/" + deviceId + "?" + apiKeyName + "=" + apiKeyValue)) // allow/200
+        mockMvc.perform(get("/device/" + deviceId + "?" + apiKeyName + "=" + apiKeySecret)) // allow/200
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/device?" + apiKeyName + "=" + apiKeyValue)
+        mockMvc.perform(post("/device?" + apiKeyName + "=" + apiKeySecret)
                         .content(exampleDoc).contentType(MediaType.APPLICATION_JSON)) // allow/201
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(put("/device?" + apiKeyName + "=" + apiKeyValue)
+        mockMvc.perform(put("/device?" + apiKeyName + "=" + apiKeySecret)
                         .content(exampleDoc).contentType(MediaType.APPLICATION_JSON)) // allow/200
                 .andExpect(status().isOk());
 
@@ -122,7 +122,7 @@ public class RegistrationApiTests {
 
     @Test
     public void testDeviceApiMalformedContent() throws Exception {
-        mockMvc.perform(post("/device?" + apiKeyName + "=" + apiKeyValue)
+        mockMvc.perform(post("/device?" + apiKeyName + "=" + apiKeySecret)
                         .content(malformedDoc1).contentType(MediaType.APPLICATION_JSON)) // deny/400
                 .andExpect(status().isBadRequest());
 

@@ -21,7 +21,7 @@ public class HttpSecurityConfig {
             final DeviceConfig config = getDeviceConfig();
             http
                     .regexMatcher("/device(s)?.*").csrf().disable()
-                    .addFilter(new ApiKeyFilter(config.getApiKeyName(), config.getApiKeyValue()));
+                    .addFilter(new ApiKeyFilter(config.getApiKeyName(), config.getApiKeySecret()));
         }
 
         @Bean
